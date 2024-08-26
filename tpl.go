@@ -2,7 +2,7 @@ package main
 
 const NGX_TEMPLATE = `
 server {
-	  listen 444; # change to 443 in production
+	  listen 443; 
 	  server_name {DOMAIN};
 	  ssl on;
 	  #server auth

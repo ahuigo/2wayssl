@@ -15,7 +15,7 @@ Usage:
 
 Example:
 
-    $ 2wayssl - 2wayssl -d 2wayssl.local
+    $ 2wayssl -d 2wayssl.local
 
     echo "127.0.0.1 2wayssl.local" | sudo tee -a /etc/hosts
     cd ~/.2wayssl && curl --cacert ca.crt --cert  client.crt --key client.key --tlsv1.2  https://2wayssl.local:444
@@ -26,8 +26,8 @@ Example:
                               |
                               v 
                       +-------+------+
-                      | nginx gateway| default port: 443
-                      | (port:444)   |  
+                      | nginx gateway| 
+                      | (port:443)   |  
                       ++-----+-------+  
                          |         | 
                          v         v

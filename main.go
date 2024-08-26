@@ -18,7 +18,7 @@ func main() {
 	flags := []cli.Flag{
 		&cli.StringSliceFlag{
 			Name:     "d",
-			Usage:    "domain and proxy_pass `domain=proxy_pass`",
+			Usage:    "domain",
 			Required: true,
 			// Destination: &conf.Domain,
 		},
@@ -38,28 +38,29 @@ func main() {
 	}
 	app := &cli.App{
         Name:        "2wayssl",
-        Description: fmt.Sprintf("start a https proxy server with self-signed certificate(version:%s,go:%s)",BuildVersion, GoVersion),
-		UsageText:   "2wayssl [-p 443] [-s] -d domain1=proxy_pass1 [-d domain2=proxy_pass2] ...",
-		Usage: `2wayssl -d local1.com=http://upstream1:4500 -d local2.com=http://upstream2:4501
+        Description: fmt.Sprintf("simple 2wayssl generator(version:%s,go:%s)",BuildVersion, GoVersion),
+		UsageText:   "2wayssl [-p 443] [-s] -d your-domain",
+		Usage: ` $ 2wayssl -p 444 -d 2wayssl.local
 
-echo "127.0.0.1 local1.com local2.com upstream1 upstream2" | sudo tee -a /etc/hosts
+echo "127.0.0.1 2wayssl.local" | sudo tee -a /etc/hosts
+cd ~/.2wayssl && curl --cacert ca.crt --cert  client.crt --key client.key --tlsv1.2  https://2wayssl.local:444
 
-			+---------------------------+
-			|curl -k https://local1.com |
-			|curl -k https://local2.com |
-			+------+--------------------+
-							|
-							v 
-				+-------+------+
-				| https proxy  | default port: 443
-				| (port:443)   |  
-				++-----+-------+  
-				|            	| (like nginx's proxy_pass)
-				v            	v
-		+-------+---+      +-----------+  
-		| upstream1 |      | upstream2 |  
-		|(port:4500)|      |(port:4501)|  
-		+-----------+      +-----------+  
+				+---------------------------+
+				|curl -k https://local1.com |
+				+------+--------------------+
+						  |
+						  v 
+				  +-------+------+
+				  | nginx gateway| 
+				  | (port:444)   |  
+				  ++-----+-------+  
+					 |         | 
+					 v         v
+		   +-------+---+        +-----------+  
+		   | upstream1 |        | upstream2 |  
+		   |(port:4500)|        |(port:4501)|  
+		   +-----------+        +-----------+  
+
 		`,
 		Before: altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("load")),
 		Flags:  flags,
