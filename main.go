@@ -70,7 +70,7 @@ cd ~/.2wayssl && curl --cacert ca.crt --cert  client.crt --key client.key --tlsv
 			quit := make(chan os.Signal, 1)
 			proxyServer := startProxyServer(func() {
 				log.Println("cleanup")
-			}, conf)
+			})
 			domains := lo.Map(conf.DomainProxys, func(dp DomainProxy, i int) string {
 				return dp.Domain
 			})

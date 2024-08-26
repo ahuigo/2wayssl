@@ -27,7 +27,7 @@ func loadCertificateRaw(certFile, keyFile string) (*tls.Certificate, error) {
 }
 
 // dual https
-func startProxyServer(cleanup func(), conf *Config) *http.Server {
+func startProxyServer(cleanup func()) *http.Server {
 	config := GetConfig()
 	// handler := getHander(config.DomainProxys)
 	// ssl 双向检验
@@ -36,12 +36,13 @@ func startProxyServer(cleanup func(), conf *Config) *http.Server {
 	confpath := os.Getenv("HOME") + "/.2wayssl"
 	crt, err := os.ReadFile(confpath + "/ca.crt")
 	if err != nil {
-		log.Fatalln("读取证书失败！", err.Error())
+		log.Fatalf("failed to read cert path:%s, err:%s\n", confpath+"ca.crt", err.Error())
+		os.Exit(0)
 	}
 	pool.AppendCertsFromPEM(crt)
 	http.HandleFunc("/", handler)
 	s := &http.Server{
-		Addr:    ":" + config.Port,
+		Addr: ":" + config.Port,
 		// Handler: handler,
 		TLSConfig: &tls.Config{
 			ClientCAs:  pool,
@@ -50,8 +51,8 @@ func startProxyServer(cleanup func(), conf *Config) *http.Server {
 		},
 	}
 	go func() {
-		serverCertPath := fmt.Sprintf(confpath + "/%s.server.crt",domain)
-		serverKeyPath := fmt.Sprintf(confpath + "/%s.server.key", domain)
+		serverCertPath := fmt.Sprintf(confpath+"/%s.server.crt", domain)
+		serverKeyPath := fmt.Sprintf(confpath+"/%s.server.key", domain)
 		log.Fatal(s.ListenAndServeTLS(serverCertPath, serverKeyPath))
 		cleanup()
 	}()

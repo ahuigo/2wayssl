@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 )
 
@@ -74,9 +73,9 @@ func StringPrompt(label string) string {
 	return strings.TrimSpace(s)
 }
 
-func isMacOsx() bool{
-    return runtime.GOOS == "darwin"
-}
-func isWindowsOs() bool{
-    return runtime.GOOS == "windows"
-}
+// func isMacOsx() bool{
+//     return runtime.GOOS == "darwin"
+// }
+// func isWindowsOs() bool{
+//     return runtime.GOOS == "windows"
+// }
