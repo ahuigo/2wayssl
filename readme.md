@@ -5,6 +5,8 @@ A Two-Way ssl generator template
 - [x] Auto generated nginx template
 - [x] An simple 2way server/client example in golang
 
+## install
+    make install
 ## USAGE
 Usage:
     
