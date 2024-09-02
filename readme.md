@@ -1,12 +1,15 @@
 # 2wayssl
-A Two-Way ssl generator template
+Automatically generate Two-Way ssl certificates, configuration, and test server.
 
 - [x] Auto generated two-way ssl certificate
 - [x] Auto generated nginx template
-- [x] An simple 2way server/client example in golang
+- [x] Simple 2way-ssl server/client example in golang
+
 
 ## install
-    make install
+    git clone https://github.com/ahuigo/2wayssl
+    cd 2wayssl && make install
+
 ## USAGE
 Usage:
     
@@ -15,24 +18,14 @@ Usage:
 
 Example:
 
-    $ 2wayssl -d 2wayssl.local
+    # 1. generate certificate and start a test server
+    $ 2wayssl -p 444 -d 2wayssl.local
 
-    echo "127.0.0.1 2wayssl.local" | sudo tee -a /etc/hosts
-    cd ~/.2wayssl && curl --cacert ca.crt --cert  client.crt --key client.key --tlsv1.2  https://2wayssl.local:444
+    # 2. test certificate via test server
+    $ echo "127.0.0.1 2wayssl.local" | sudo tee -a /etc/hosts
+    $ cd ~/.2wayssl && curl --cacert ca.crt --cert  client.crt --key client.key --tlsv1.2  https://2wayssl.local:444
 
-                    +---------------------------+
-                    |curl -k https://local1.com |
-                    +------+--------------------+
-                              |
-                              v 
-                      +-------+------+
-                      | nginx gateway| 
-                      | (port:443)   |  
-                      ++-----+-------+  
-                         |         | 
-                         v         v
-               +-------+---+        +-----------+  
-               | upstream1 |        | upstream2 |  
-               |(port:4500)|        |(port:4501)|  
-               +-----------+        +-----------+  
-                   
+    # 3. view certificate and nginx.conf
+    $ ls ~/.2wayssl 
+    2wayssl.local.server.crt 2wayssl.local.server.key ca.key                   client.crt               client.key
+    2wayssl.local.server.csr ca.crt                   ca.srl                   client.csr               nginx.conf

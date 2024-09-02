@@ -36,6 +36,7 @@ type Config struct {
 	Port         string
 	Silent       bool
 	DomainProxys []DomainProxy
+	SubjPrefix   string
 	// Domain      string
 	// ProxyPass   string
 	// CertPath    string

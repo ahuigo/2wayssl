@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+var subj_prefix = `/C=CN/ST=GD/L=SZ/O=TwoWaySsl, Org.`
+
 func getCertPath(domain string) (certPath, certKeyPath string) {
 	home := os.Getenv("HOME")
 	certPath = fmt.Sprintf(home+"/.2wayssl/%s.crt", domain)
@@ -27,7 +29,7 @@ func createCA() {
 		os.Exit(0)
 	}
 	// 2. generate ca cert
-	cmd = `openssl req -new -x509 -days 3650 -key ca.key -out ca.crt -subj "/C=CN/ST=GD/L=SZ/O=TwoWaySsl, Inc."`
+	cmd = fmt.Sprintf(`openssl req -new -x509 -days 3650 -key ca.key -out ca.crt -subj "%s"`, subj_prefix)
 	out, err = RunCommand("sh", "-c", cmd)
 	if err != nil {
 		fmt.Printf("failed to execute cmd(\033[31m %s \033[0m), err: %v, stdout: %s\n\n", cmd, err, out)
@@ -49,7 +51,7 @@ func createServerCert(domain string) {
 	}
 
 	// 3. generate domain's server csr
-	cmd = fmt.Sprintf(`openssl req -new -key %s.server.key -out %s.server.csr -subj "/C=CN/ST=BJ/L=BJ/O=TwoWaySsl, Inc./CN=%s" -addext "subjectAltName = DNS:%s"`, domain, domain, domain, domain)
+	cmd = fmt.Sprintf(`openssl req -new -key %s.server.key -out %s.server.csr -subj "%s/CN=%s" -addext "subjectAltName = DNS:%s"`, domain, domain,subj_prefix, domain, domain)
 	println(cmd)
 	out, err = RunCommand("sh", "-c", cmd)
 	if err != nil {
@@ -81,7 +83,7 @@ func createClientCert() {
 	}
 
 	// 3. generate domain's client csr
-	cmd = fmt.Sprintf(`openssl req -new -key client.key -out client.csr -subj "/C=CN/ST=BJ/L=BJ/O=TwoWaySsl, Inc./CN=%s"`, "client")
+	cmd = fmt.Sprintf(`openssl req -new -key client.key -out client.csr -subj "%s/CN=client"`, subj_prefix)
 	out, err = RunCommand("sh", "-c", cmd)
 	if err != nil {
 		fmt.Printf("failed to execute cmd(\033[31m %s \033[0m), err: %v, stdout: %s\n\n", cmd, err, out)
@@ -97,8 +99,13 @@ func createClientCert() {
 }
 
 func createCert(conf *Config) {
+	// 1. init config 
 	domain :=conf.DomainProxys[0].Domain
-	// 1. ca + server + client
+	if len(conf.SubjPrefix)>0 && conf.SubjPrefix[0] == '/' {
+		subj_prefix = conf.SubjPrefix
+	}
+
+	// 2. ca + server + client
 	createCA()
 	createServerCert(domain)
 	createClientCert()

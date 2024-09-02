@@ -1,6 +1,6 @@
 LDFLAGS += -s -w -X "main.BuildDate=$(shell date -u "+%Y-%m-%dT%H:%M:%S")"
-LDFLAGS += -s -w -X "main.BuildVersion=$(shell cat version)"
-
+LDFLAGS += -X "main.BuildVersion=$(shell cat version)"
+LDFLAGS += -X "main.GoVersion=$(shell go version|grep -Eo '[[:digit:]]+.[[:digit:]]+.[[:digit:]]+')"
 
 run:
 	go run . -s  -p 444 -d 2wayssl.local
@@ -19,7 +19,6 @@ pkg: gitcheck test
 	git commit -am "$(msg)"
 	#jfrog "rt" "go-publish" "go-pl" $$(cat version) "--url=$$GOPROXY_API" --user=$$GOPROXY_USER --apikey=$$GOPROXY_PASS
 	v=`cat version` && git tag "$$v" && git push origin "$$v" && git push origin HEAD
-
 
 init:
 	go mod tidy

@@ -43,7 +43,7 @@ func (h *Hander) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		sw := &wrapResponseWriter{ResponseWriter: w}
 		proxy.http.ServeHTTP(sw, r)
 	} else {
-		w.Write([]byte("please config: -d " + hostname + "=proxy_pass in command line\n"))
+		w.Write([]byte("please config: -d " + hostname + " in command line\n"))
 		w.WriteHeader(404)
 	}
 }
